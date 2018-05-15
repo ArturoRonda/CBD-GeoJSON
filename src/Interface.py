@@ -1,8 +1,5 @@
 import sys
 from PyQt5.QtWidgets import *
-from MapReader import MapReader
-from PyQt5.QtCore import Qt
-import geojsonio
 import webbrowser
 
 def lookForMaps():
@@ -37,33 +34,45 @@ class App(QMainWindow):
         if(self.selected == ""):
             QMessageBox.about(self, "ERROR", "Seleccione una ruta")
         else:
-            f = open('index.html', 'w')
+            map = open('maps/'+self.selected,'r')
+            for line in map:
+                if "coordinates" in line:
+                    break
 
-            message = """<!DOCTYPE html>
-            <html lang="en">
-            <head>
-            <meta charset="utf-8" />
-            <title>Hiker app</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <link rel="stylesheet" href="style.css" />
-            <link rel="stylesheet" href="leaflet.css" crossorigin=""/>
-            <script src="leaflet.js" crossorigin=""></script>
-            </head>
-            <body>
-            <div id="mapid"></div>
-            </body>
-            <script src="script.js" map=""" + '"' + self.selected + '"' + """></script>
-            </html>"""
+        map.readline()
+        coord1 = map.readline().strip().split(",")
+        coord2 = map.readline().strip().split(",")
+        print(coord1[0])
+        print(coord2[0])
+        map.close()
 
-            f.write(message)
-            f.close()
+        f = open('index.html', 'w')
 
-            # Change path to reflect file location
-            webbrowser.open_new_tab("index.html")
-            # geojsonio.display(self.selected)
+        message = """<!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="utf-8" />
+        <title>Hiker app</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="leaflet.css" crossorigin=""/>
+        <script src="leaflet.js" crossorigin=""></script>
+        </head>
+        <body>
+        <div id="mapid"></div>
+        </body>
+        <script src="script.js" map=""" + '"maps/' + self.selected + '"'+ """ longitud = """+ '"' + coord1[0] + '"'+""" latitud = """ + '"' + coord2[0] + '"' + """></script>
+        </html>"""
+
+        f.write(message)
+        f.close()
+
+        # Change path to reflect file location
+        webbrowser.open_new_tab("index.html")
+        # geojsonio.display(self.selected)
 
     def file_choice(self, text):
-        self.selected="maps/" + text
+        self.selected=text
 
     def closeEvent(self, event):
 
@@ -96,6 +105,7 @@ class MyTableWidget(QWidget):
         self.tab1.layout.addWidget(self.label)
 
         self.fileChoicer = QComboBox(self)
+        self.fileChoicer.addItem("")
         for mapname in lookForMaps():
             self.fileChoicer.addItem(mapname)
 
