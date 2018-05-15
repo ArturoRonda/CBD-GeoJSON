@@ -2,19 +2,29 @@ import sys
 from PyQt5.QtWidgets import *
 from MapReader import MapReader
 from PyQt5.QtCore import Qt
+import geojsonio
+import webbrowser
 
+def lookForMaps():
+    from os import walk
+    f = []
+    for (dirpath, dirnames, filenames) in walk("maps/"):
+        f.extend(filenames)
+        break
+    return f
 
 class App(QMainWindow):
     def __init__(self):
         super().__init__()
         self.log = ""
         self.sCat = ""
-        self.title = 'Rutas mas actuales en Andalucia, GeoJSON'
-        self.left = 300
-        self.top = 150
-        self.width = 700
-        self.height = 500
+        self.title = 'HIKER :: Rutas mas actuales en Andalucia'
+        self.left = 150
+        self.top = 75
+        self.width = 600
+        self.height = 250
         self.statusBar()
+        self.selected = ""
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -24,14 +34,36 @@ class App(QMainWindow):
         self.show()
  
     def demobuttonClicked(self):
-        if(False):
-            QMessageBox.about(self, "ERROR", "Un mensaje de error")
+        if(self.selected == ""):
+            QMessageBox.about(self, "ERROR", "Seleccione una ruta")
         else:
-            self.statusBar().showMessage('Esto indica que ha ocurrido')
-            QMessageBox.about(self, "RESULTADO", 'Mensage del resultado')
+            f = open('index.html', 'w')
+
+            message = """<!DOCTYPE html>
+            <html lang="en">
+            <head>
+            <meta charset="utf-8" />
+            <title>Hiker app</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <link rel="stylesheet" href="style.css" />
+            <link rel="stylesheet" href="leaflet.css" crossorigin=""/>
+            <script src="leaflet.js" crossorigin=""></script>
+            </head>
+            <body>
+            <div id="mapid"></div>
+            </body>
+            <script src="script.js" map=""" + '"' + self.selected + '"' + """></script>
+            </html>"""
+
+            f.write(message)
+            f.close()
+
+            # Change path to reflect file location
+            webbrowser.open_new_tab("index.html")
+            # geojsonio.display(self.selected)
 
     def file_choice(self, text):
-        QMessageBox.about(self, "RESULTADO", text + ' ha sido descargada')
+        self.selected="maps/" + text
 
     def closeEvent(self, event):
 
@@ -64,19 +96,20 @@ class MyTableWidget(QWidget):
         self.tab1.layout.addWidget(self.label)
 
         self.fileChoicer = QComboBox(self)
-        self.fileChoicer.addItem("motif")
-        self.fileChoicer.addItem("Windows")
-        self.fileChoicer.addItem("cde")
-        self.fileChoicer.addItem("Plastique")
-        self.fileChoicer.addItem("Cleanlooks")
-        self.fileChoicer.addItem("windowsvista")
+        for mapname in lookForMaps():
+            self.fileChoicer.addItem(mapname)
+
         self.tab1.layout.addWidget(self.fileChoicer)
 
         self.fileChoicer.activated[str].connect(parent.file_choice)
-        self.mapView = QGraphicsView()
-        map = QGraphicsScene
-        self.mapView.setScene(self, map)
-        self.tab1.layout.addWidget(self.mapView)
+        # self.mapView = QGraphicsView()
+        # map = QGraphicsScene
+        # self.mapView.setScene(self, map)
+        # self.tab1.layout.addWidget(self.mapView)
+
+        self.readyButton = QPushButton("Ver en navegador",self)
+        self.tab1.layout.addWidget(self.readyButton)
+        self.readyButton.clicked.connect(lambda: parent.demobuttonClicked())
 
         # self.pushButton2 = QPushButton("Entrenar el modelo con la división seleccionada: ", self)
         # self.tab1.layout.addWidget(self.pushButton2)
