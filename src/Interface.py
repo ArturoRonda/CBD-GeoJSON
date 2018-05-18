@@ -39,37 +39,37 @@ class App(QMainWindow):
                 if "coordinates" in line:
                     break
 
-        map.readline()
-        coord1 = map.readline().strip().split(",")
-        coord2 = map.readline().strip().split(",")
-        print(coord1[0])
-        print(coord2[0])
-        map.close()
+            map.readline()
+            coord1 = map.readline().strip().split(",")
+            coord2 = map.readline().strip().split(",")
+            print(coord1[0])
+            print(coord2[0])
+            map.close()
 
-        f = open('index.html', 'w')
+            f = open('index.html', 'w')
 
-        message = """<!DOCTYPE html>
-        <html lang="en">
-        <head>
-        <meta charset="utf-8" />
-        <title>Hiker app</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <link rel="stylesheet" href="style.css" />
-        <link rel="stylesheet" href="leaflet.css" crossorigin=""/>
-        <script src="leaflet.js" crossorigin=""></script>
-        </head>
-        <body>
-        <div id="mapid"></div>
-        </body>
-        <script src="script.js" map=""" + '"maps/' + self.selected + '"'+ """ longitud = """+ '"' + coord1[0] + '"'+""" latitud = """ + '"' + coord2[0] + '"' + """></script>
-        </html>"""
+            message = """<!DOCTYPE html>
+            <html lang="en">
+            <head>
+            <meta charset="utf-8" />
+            <title>Hiker app</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <link rel="stylesheet" href="style.css" />
+            <link rel="stylesheet" href="leaflet.css" crossorigin=""/>
+            <script src="leaflet.js" crossorigin=""></script>
+            </head>
+            <body>
+            <div id="mapid"></div>
+            </body>
+            <script src="script.js" map=""" + '"maps/' + self.selected + '"'+ """ longitud = """+ '"' + coord1[0] + '"'+""" latitud = """ + '"' + coord2[0] + '"' + """></script>
+            </html>"""
 
-        f.write(message)
-        f.close()
+            f.write(message)
+            f.close()
 
-        # Change path to reflect file location
-        webbrowser.open_new_tab("index.html")
-        # geojsonio.display(self.selected)
+            # Change path to reflect file location
+            webbrowser.open_new_tab("index.html")
+            # geojsonio.display(self.selected)
 
     def file_choice(self, text):
         self.selected=text
